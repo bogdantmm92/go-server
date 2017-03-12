@@ -1,0 +1,12 @@
+{
+  "name": "go-server",
+  "version": "0.0.1",
+  "description": "Best go game server out there",
+  "scripts": {
+    "start": "node ./src/main.js"
+  },
+  "dependencies": {
+    "realm": "^1.1.1",
+    "socket.io": "^1.7.3"
+  }
+}
