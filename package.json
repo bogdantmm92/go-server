@@ -6,6 +6,7 @@
     "start": "node ./src/main.js"
   },
   "dependencies": {
+    "mongoose": "^4.9.0",
     "realm": "^1.1.1",
     "socket.io": "^1.7.3"
   }
