@@ -37,29 +37,29 @@ function handleLoginUser(client, user, cb) {
   console.log('handleLoginUser: ' + user._id);
   db.User.findByIdAndUpdate(user._id, {
     $set: {
-      'lastLoggedIn': Date.now()
+      'lastLoggedIn': new Date()
     }
   }, (err, user) => {
     console.log(JSON.stringify(user));
     if (err) {
       console.log("failed to login user");
-      cb(null);
+      // cb(null);
     } else {
         cb(user);
     }
   });
 }
 function handleCreateUser(client, cb) {
-	var newUser = new db.User({
+  var newUser = new db.User({
     'name': 'Bogdan_' + Date.now(),
     'rating': 1,
-    'lastLoggedIn': Date.now()
+    'lastLoggedIn': new Date()
   });
   console.log('handleCreateUser: ' + newUser);
   newUser.save((err) => {
     if (err) {
-      console.log("failed to create user");
-      cb(null);
+      console.log("failed to create user:" + err);
+      // cb(null);
     } else {
       cb(newUser);
     }

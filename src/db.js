@@ -15,7 +15,17 @@ function connected() {
 var userSchema = mongoose.Schema({
   name: String,
   rating: Number,
-  lastLoggedIn: Number
+  lastLoggedIn: Date
+});
+
+var moveSchema = mongoose.Schema({
+  x: Number,
+  y: Number,
+  time: Date
+});
+var gameSchema = mongoose.Schema({
+  combinedId: String,
+  moves: [moveSchema]
 });
 
 var User = mongoose.model('User', userSchema);
