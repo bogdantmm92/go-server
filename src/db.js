@@ -1,18 +1,32 @@
-class User {}
-User.schema = {
-  name: 'User',
-  properties: {
-    id:  'string',
-    name: 'string'
-  }
-};
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test');
 
-class Game {}
-Game.schema = {
-  name: 'Game',
-  properties: {
-    id:  'string',
-    users: {type: 'list', objectType: 'User'},
-    state: 'string'
-  }
-};
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  connected();
+});
+
+function connected() {
+  console.log("Connected to db");
+}
+
+// Define Schema
+var userSchema = mongoose.Schema({
+  name: String,
+  rating: Number,
+  lastLoggedIn: Date
+});
+
+var moveSchema = mongoose.Schema({
+  x: Number,
+  y: Number,
+  time: Date
+});
+var gameSchema = mongoose.Schema({
+  combinedId: String,
+  moves: [moveSchema]
+});
+
+var User = mongoose.model('User', userSchema);
+exports.User = User;
