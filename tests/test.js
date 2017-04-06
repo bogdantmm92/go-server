@@ -71,13 +71,13 @@ async function main() {
   await sleep(2000);
   createGameWith(USERS_SOCKETS[0], 0, USERS[0], USERS[2]);
   await sleep(2000);
-  doMove(USERS_SOCKETS[0], 0, GAMES[0], {x: 1, y: 2, color: 'white'});
+  doMove(USERS_SOCKETS[0], 0, GAMES[0], {x: 1, y: 2, color: -1});
   await sleep(2000);
-  doMove(USERS_SOCKETS[2], 2, GAMES[0], {x: 3, y: 6, color: 'black'});
+  doMove(USERS_SOCKETS[2], 2, GAMES[0], {x: 3, y: 6, color: 1});
   await sleep(2000);
-  doMove(USERS_SOCKETS[0], 0, GAMES[0], {x: 4, y: 4, color: 'white'});
+  doMove(USERS_SOCKETS[0], 0, GAMES[0], {x: 4, y: 4, color: -1});
   await sleep(2000);
-  doMove(USERS_SOCKETS[2], 2, GAMES[0], {x: 6, y: 5, color: 'black'});
+  doMove(USERS_SOCKETS[2], 2, GAMES[0], {x: 6, y: 5, color: 1});
   await sleep(2000);
 }
 

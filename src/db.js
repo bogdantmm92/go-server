@@ -27,19 +27,24 @@ var userSchema = mongoose.Schema({
   updated_at: Date
 });
 
+/* moveSchema.color
+white = -1
+black = 1
+*/
 var moveSchema = mongoose.Schema({
   x: Number,
   y: Number,
-  color: String,
+  color: Number,
   created_at: Date,
 });
 var gameSchema = mongoose.Schema({
   ids: [String],
   accepted_ids: [String],
   moves: [moveSchema],
+  board_size: Number,
   black: String,
   white: String,
-  current_turn: String,
+  current_turn: Number,
   created_at: Date,
   updated_at: Date
 });

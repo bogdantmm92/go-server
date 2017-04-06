@@ -70,9 +70,10 @@ function createGame(user1, user2) {
     'ids': ids,
     'accepted_ids': [user1._id],
     'moves': [],
+    'board_size': 13,
     'black': randomIds[1],
     'white': randomIds[0],
-    'current_turn': 'white',
+    'current_turn': -1,
     'created_at': currentDate,
     'updated_at': currentDate,
   });
