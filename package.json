@@ -3,10 +3,12 @@
   "version": "0.0.1",
   "description": "Best go game server out there",
   "scripts": {
-    "start": "node ./src/main.js"
+    "start": "node ./src/main.js",
+    "test": "mocha"
   },
   "dependencies": {
     "lodash": "^4.17.4",
+    "mocha": "^3.3.0",
     "mongoose": "^4.9.0",
     "realm": "^1.1.1",
     "socket.io": "^1.7.3"

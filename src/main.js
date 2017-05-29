@@ -1,6 +1,7 @@
 var server = require('http').createServer(handleRequest);
 var io = require('socket.io')(server);
 var db = require('./db');
+var games = require('./games');
 var _ = require('lodash');
 
 function handleRequest(request, response) {
@@ -22,17 +23,41 @@ function handleConnection(client) {
 	client.on('login_user', (user, cb) => handleLoginUser(client, user, cb));
   client.on('create_game', (user2, cb) => handleCreateGame(client, user2, cb));
   client.on('join_game', (game) => handleJoinGame(client, game));
-  client.on('do_move', (game, move) => handleMove(client, game, move));
+  client.on('do_move', (game, move, cb) => handleMove(client, game, move, cb));
 }
 
+function handleMove(client, game, move, cb) {
+  console.log('handleMove');
 
-function handleMove(client, game, move) {
-  db.Game.findByIdAndUpdate(game._id, {
-    $push: {
-      'moves': createMove(move)
+  user1Promise = db.User.findOne({
+    'internal_data.socket_id': client.id
+  }).exec();
+  gamePromise = db.Game.findById(game._id).exec();
+
+  var user1, game;
+  Promise.all([user1Promise, gamePromise]).then(([user1, game]) => {
+    var validMove = games.checkValidMove(user1.id, game, move);
+    console.log(user1.id);
+    console.log(validMove);
+    console.log(game);
+    if (validMove.ok) {
+      return Promise.resolve(game);
+    } else {
+      return Promise.reject(validMove.msg);
     }
-  }, {new: true}).exec().then((game) => {
+  }).then((game) => {
+    return db.Game.update({_id: game._id}, {
+      $push: {
+        'moves': createMove(move)
+      },
+      'current_turn': game.current_turn == 1 ? -1 : 1
+    }, {new: true}).exec();
+  }).then((game) => {
+    cb(null, game);
     io.to(game._id).emit('move', game);
+  }).catch((e) => {
+    cb(e, null);
+    console.log("error: " + e);
   });
 }
 
@@ -73,7 +98,7 @@ function createGame(user1, user2) {
     'board_size': 13,
     'black': randomIds[1],
     'white': randomIds[0],
-    'current_turn': -1,
+    'current_turn': 1,
     'created_at': currentDate,
     'updated_at': currentDate,
   });
@@ -85,14 +110,17 @@ function handleCreateGame(client, user2, cb) {
     'internal_data.socket_id': client.id
   }).exec();
   user2Promise = db.User.findById(user2._id).exec();
-  var user1, user2, currentGame;
+  var user1, user2, game;
   Promise.all([user1Promise, user2Promise]).then(([user1, user2]) => {
     return createGame(user1, user2).save();
   }).then((game) => {
     client.join(game._id, () => {
-      cb(game);
+      cb(null, game);
       io.to(user2.internal_data.socket_id).emit('game_invite_sent', game);
     });
+  }).catch((e) => {
+    cb(e, null);
+    console.log(e);
   });
 }
 
@@ -148,9 +176,11 @@ function handleLoginUser(client, user, cb) {
       }
     }
   }).exec().then((user) => {
-    console.log(JSON.stringify(user));
-    cb(user);
+    cb(null, user);
     handleLoginUserSuccess(client, user);
+  }).catch((e) => {
+    cb(e, null);
+    console.log(e);
   });
 }
 
@@ -169,8 +199,11 @@ function handleCreateUser(client, cb) {
   console.log('handleCreateUser: ' + newUser);
   newUser.save().then((user) => {
     console.log(JSON.stringify(user));
-    cb(user);
+    cb(null, user);
     handleLoginUserSuccess(client, user);
+  }).catch((e) => {
+    cb(e, null);
+    console.log(e);
   });
 }
 
