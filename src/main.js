@@ -34,21 +34,19 @@ function handleMove(client, game, move, cb) {
   }).exec();
   gamePromise = db.Game.findById(game._id).exec();
 
-  var user1, game;
+  var c_user1;
   Promise.all([user1Promise, gamePromise]).then(([user1, game]) => {
+    c_user1 = user1;
     var validMove = games.checkValidMove(user1.id, game, move);
-    console.log(user1.id);
-    console.log(validMove);
-    console.log(game);
-    if (validMove.ok) {
-      return Promise.resolve(game);
-    } else {
+
+    if (!validMove.ok) {
       return Promise.reject(validMove.msg);
     }
-  }).then((game) => {
+
+    var newMoves = games.doMove(c_user1.id, game, move);
     return db.Game.update({_id: game._id}, {
-      $push: {
-        'moves': createMove(move)
+      $set: {
+        'moves': newMoves
       },
       'current_turn': game.current_turn == 1 ? -1 : 1
     }, {new: true}).exec();
@@ -75,16 +73,6 @@ function handleJoinGame(client, game, cb) {
     client.join(game._id, () => {
       io.to(game._id).emit('game_start', game);
     });
-  });
-}
-
-function createMove(move) {
-  var currentDate = new Date();
-  return new db.Move({
-    'x': move.x,
-    'y': move.y,
-    'color': move.color,
-    'created_at': currentDate
   });
 }
 function createGame(user1, user2) {

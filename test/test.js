@@ -157,7 +157,60 @@ describe('Error tests', function() {
     await connectUsers();
     let game = await createGame();
     try {
-      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 3, y: 6, color: -1});
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 3, y: 30, color: 1});
+      return Promise.reject();
+    } catch(e) {
+      return Promise.resolve(e);
+    }
+  });
+
+  it('move out of bounds. Negative value', async () => {
+    await connectUsers();
+    let game = await createGame();
+    try {
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: -1, y: 8, color: 1});
+      return Promise.reject();
+    } catch(e) {
+      return Promise.resolve(e);
+    }
+  });
+
+  it('suicidal move 1', async () => {
+    await connectUsers();
+    let game = await createGame();
+    try {
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 1, y: 2, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 0, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 2, y: 2, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 1, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 0, y: 1, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 2, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 3, y: 1, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 3, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 1, y: 0, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 1, y: 1, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 2, y: 0, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 2, y: 1, color: -1});
+      return Promise.reject();
+    } catch(e) {
+      return Promise.resolve(e);
+    }
+  });
+
+  it('suicidal move 2', async () => {
+    await connectUsers();
+    let game = await createGame();
+    try {
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 1, y: 0, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 0, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 0, y: 1, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 0, y: 0, color: -1});
       return Promise.reject();
     } catch(e) {
       return Promise.resolve(e);
@@ -167,10 +220,56 @@ describe('Error tests', function() {
 
 describe('Test functionality', function() {
   this.timeout(15000);
-  it('valid moves', async () => {
+  it('capture stones 1', async () => {
     await connectUsers();
     let game = await createGame();
-    await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 3, y: 6, color: 1});
-    return Promise.resolve();
+    try {
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 1, y: 2, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 0, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 2, y: 2, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 1, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 0, y: 1, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 2, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 3, y: 10, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 3, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 1, y: 0, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 1, y: 1, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 2, y: 0, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 2, y: 1, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 3, y: 1, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 2, y: 1, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 1, y: 1, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 6, y: 6, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 2, y: 1, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 7, y: 6, color: -1});
+      return Promise.resolve();
+    } catch(e) {
+      return Promise.reject(e);
+    }
+  });
+
+  it('capture stones in corner', async () => {
+    await connectUsers();
+    let game = await createGame();
+    try {
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 18, y: 18, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 17, y: 18, color: -1});
+
+      await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 17, y: 17, color: 1});
+      await doMove(SOCKETS_BY_USER_ID[game.white], game, {x: 18, y: 17, color: -1});
+
+      // await doMove(SOCKETS_BY_USER_ID[game.black], game, {x: 17, y: 17, color: 1});
+      return Promise.resolve();
+    } catch(e) {
+      return Promise.reject(e);
+    }
   });
 });

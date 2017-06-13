@@ -34,6 +34,7 @@ black = 1
 var moveSchema = mongoose.Schema({
   x: Number,
   y: Number,
+  captured: Boolean,
   color: Number,
   created_at: Date,
 });
